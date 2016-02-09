@@ -1,16 +1,24 @@
-i = 0
-numbers = []
+def add_to_list(max):
 
-while i < 6:
-	print "At the top i is %d" % i
-	numbers.append(i)
+	i = 0
+	numbers = []
 
-	i = i + 1
-	print "Numbers now: ", numbers
-	print "At the bottom i is %d" % i
+	while i < max:
+		numbers.append(i)
+		i = i + 5
 
-print "The numbers: "
+	print "The numbers: "
 
-for num in numbers:
-	print num
+	for num in numbers:
+		print num
+
+add_to_list(21)
+
+def add_to_list_range(max):
+
+	for i in range(1,max):
+		print i
+
+add_to_list_range(16)
+
 

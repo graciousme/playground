@@ -1,3 +1,5 @@
+# version with raw inputs built in the functions
+
 user_name = raw_input("What is your name? ")
 
 print
