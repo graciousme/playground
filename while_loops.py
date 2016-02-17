@@ -20,5 +20,3 @@ def add_to_list_range(max):
 		print i
 
 add_to_list_range(16)
-
-
