@@ -16,18 +16,18 @@ def draw_checkerboard(checker_side_length):
 		if (height % 2) == 0:
 			for i in range(checker_side_length):
 				if (i % 2) == 0:
-					print "o ",
-				if (i % 2) > 0:
 					print "x ",
+				if (i % 2) > 0:
+					print "o ",
 			height += 1
 			print "\n"
 		
 		elif (height % 2) > 0:
 			for i in range(checker_side_length):
 				if (i % 2) == 0:
-					print "x ",
-				if (i % 2) > 0:
 					print "o ",
+				if (i % 2) > 0:
+					print "x ",
 			height += 1
 			print "\n"
 
