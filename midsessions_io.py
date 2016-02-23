@@ -6,7 +6,7 @@ def letter_count(file_name):
 		letter_count_file = " ".join(letter_count_file)
 		for character in letter_count_file:
 			if character != "\n" and character != "\x92" and character != " ":
-				letter_count_dict[character] = letter_count_file.count(character)
+				letter_count_dict[str.upper(character)] = letter_count_file.count(character)
 				index  += 1
 	print letter_count_dict
 
