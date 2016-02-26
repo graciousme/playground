@@ -4,14 +4,22 @@ from json import load
 #sf open data source: film location in sf
 #apiUrl = "https://data.sfgov.org/resource/yitu-d5am.json?title=180"
 
-def search_title():
-	title = raw_input ("What title would you like to search? ")
-	title = title.replace(" ", "-")
-	apiUrl = "https://data.sfgov.org/resource/yitu-d5am.json?title="+title
+def search_year():
+	apiUrl = "https://data.sfgov.org/resource/yitu-d5am.json?"
+	release_year_wanted = raw_input ("What release year would you like to search? ")
+	release_year = "release_year=" + release_year_wanted
+	apiUrl += release_year
 	print apiUrl
+
 	response = urlopen(apiUrl)
 	json_obj = load(response)
-	print json_obj	
+	
+	film_list = []
+	for film in json_obj:
+		if film["title"] not in film_list:
+			film_list.append(film["title"])
+
+	print film_list
 
 #open the apiUrl and assign data to variable
 # response = urlopen(apiUrl)
@@ -20,7 +28,7 @@ def search_title():
 
 # print json_obj
 
-search_title()
+search_year()
 
 #ideas
 # how does kanye feel today?

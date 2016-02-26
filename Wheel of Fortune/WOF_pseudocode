@@ -1,0 +1,88 @@
+Wheel of Fortune
+
+VARIABLES
+
+user1 - name, string
+user2 - name, string
+user1_score - dollar amount, float
+user2_score - dollar amount, float
+wheel_selection - one of 24 random spaces chosen, use random to select
+user_turn - indicates whose turn we're on; stay on user until they guess wrong
+round_number
+current_board
+board_solution - randomly chosen from board_solutions_list
+board_solutions_list
+guesses = []
+
+FUNCTIONS
+
+user_choice()
+	spin_wheel()
+	buy_vowel
+
+spin_wheel()
+	
+	user_turn = x
+	
+	while user_turn = x 
+		return wheel_selection
+		if bankrupt...
+		if lose_turn...
+
+		guess_letter
+			raw input
+			
+			if not letter
+			if more than one letter
+			if vowel
+			if letter in current_board
+				in all these scenarios, request input againe
+			
+			for every character in board_solution
+
+				if letter in board_solution
+					print character
+					letter_count = count number of letters solved
+					user_score += wheel_selection * letter_count
+					user_turn stays the same
+
+				if letter not in board_solution
+					print _
+					sorry message
+					user_turn alternates
+
+buy_vowel()
+	if user has < $250
+		try again
+	if vowel in current_board
+		try again
+	
+	for every character in board_solution
+
+		if vowel not in board_solution
+			sorry message
+			user_turn alternates
+
+		if vowel in board_solution
+			
+			vowel_count = count of vowels solved
+
+		user score = user score - vowel cost
+
+
+OPTIONAL TO ADD LATER
+
+# wheel_select_bankrupt
+# wheel_select_lose_turn
+
+# bankrupt gets removed from the board entirely for that round
+# counter limits the amount of time you have to choose a letter
+
+# different methodology: variables for board_resolved and board_missing (reverse of board_resolved)
+instead of checking if letter/vowel already on board AND if it's in the solution, only have to check if it's in the solution
+
+# play sounds: wheelspin, ding sounds
+# cheesy graphics
+
+
+
