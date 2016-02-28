@@ -1,5 +1,18 @@
 Wheel of Fortune
 
+SPACES
+
+Wild Card - offers an extra letter to be called on a spin for the same amount that user spins + $500 per consonant; held onto until the user chooses to use it; would be lost to Bankrupt
+
+Free Play - User can choose consonant, buy a vowel, or attempt to solve with no penalty for being wrong; plus $500 per correct letter
+
+1/2 Car - tag that user holds onto until they win the other half; would be lost to Bankrupt (replace)
+
+Gift  - $1k towards a company's products (replace with something else)
+
+Prize - usually some type of trip or vacation (replace with something else)
+
+
 VARIABLES
 
 user1 - name, string
@@ -15,6 +28,8 @@ board_solutions_list
 guesses = []
 
 FUNCTIONS
+
+get board solution()
 
 user_choice()
 	spin_wheel()
@@ -36,7 +51,7 @@ spin_wheel()
 			if more than one letter
 			if vowel
 			if letter in current_board
-				in all these scenarios, request input againe
+				in all these scenarios, request input again
 			
 			for every character in board_solution
 
@@ -68,6 +83,11 @@ buy_vowel()
 			vowel_count = count of vowels solved
 
 		user score = user score - vowel cost
+
+i'd like to solve the puzzle ()
+	if matches the solution:
+		increment points
+	if doesn't match:
 
 
 OPTIONAL TO ADD LATER
