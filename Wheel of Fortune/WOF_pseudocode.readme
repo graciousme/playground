@@ -105,4 +105,10 @@ instead of checking if letter/vowel already on board AND if it's in the solution
 # cheesy graphics
 
 
+CHECK LETTER
+- draw board
+- add points
+- add guess to guesses
+
+
 
