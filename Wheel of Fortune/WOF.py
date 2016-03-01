@@ -193,6 +193,7 @@ def play_game():
 
 				scores[user_turn] += turn_score
 
+				print is_winning
 				if is_winning == False:
 					index += 1
 
