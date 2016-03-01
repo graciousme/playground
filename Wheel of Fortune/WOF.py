@@ -9,34 +9,44 @@ import random
 # 	return input().upper().startswith("Y")
 
 # gets users' names
-# TO DO: handle invalid input
-def get_user_names(user_num):
+# TO DO: handle invalid input, handle both names being the same
+def get_user_names(num_users):
 	users = []
 	index = 1
-	for number in range(user_num):
+	for number in range(num_users):
 		user = str.upper(raw_input (("\nPlayer %i, please tell us your name: ") % (index)))
-		if user == " " or user == "":
+		
+		while user in [" ", "", ".", ",", "'"]:
 			user = str.upper(raw_input ("Sorry, invalid user name. Please try again: "))
-		else:
-			users.append(user)
+		
+		users.append(user)
 		index += 1
+	
 	return users
 
-def get_user_num():
-	user_num = int(raw_input ("\nHow many contestants will be playing today? "))
-	if user_num > 4 or user_num < 1:
-		user_num = int(raw_input ("\nSorry, not a valid number of players. Please try again: "))
-	return user_num
+# gets number of users playing the game, returns as num_users
+# keeps asking until valid input received (only 1-3 allowed)
 
-# chooses random category from list
-def get_category():
+def get_num_users():
+
+	num_users = raw_input ("\n How many contestants will be playing today? ")
+
+	while num_users not in ["1", "2", "3"]:
+		num_users = raw_input("\n Sorry, invalid number. Please try again: ")
+
+	num_users = int(num_users)
+	
+	return num_users
+
+# chooses random category from list and prints
+def get_category(): 
 	categories = ["AROUND THE HOUSE", "BEFORE AND AFTER", "EVENTS", "FUN & GAMES", "PHRASES", "WHAT ARE YOU DOING?"]
 	category = random.choice(categories)
 	print 
 	print "\tToday's category is...", category
 	return category
 
-# chooses random board solution from category list
+# chooses random board solution from category file, splits into list of characters, returns as board_solution
 def get_board_solution():
 	category = get_category()
 	category_files = {"AROUND THE HOUSE": "sol_around_the_house.txt", 
@@ -53,7 +63,7 @@ def get_board_solution():
 	board_solution = list(str.upper(board_solution))
 	return board_solution
 
-# gets user's action for this turn
+# gets user's action for this turn, returns as user_choice
 def get_user_choice():
 	user_choice = raw_input ("\n\t1 = Guess a letter and spin the wheel \n\t2 = Buy a vowel for $250 \n\t3 = Solve the puzzle \n\n\tChoose an action: ")
 
@@ -62,7 +72,8 @@ def get_user_choice():
 
 	return user_choice
 
-# gets the space that user lands on
+# gets the space that user lands on, returns as landed_space
+# if lands on $1MM, give them 1 in 3 chance of getting it; otherwise Bankrupt
 # TO DO: code for non-$ wedges
 def spin_wheel():
 	with open("wheel_spaces.txt") as file:
@@ -81,7 +92,7 @@ def spin_wheel():
 	print "\n\tWheel has landed on:", landed_space
 	return landed_space
 			
-# gets consonant that user guesses
+# gets consonant that user chooses, returns as guess
 # TO DO: handle other non-letters, previously guessed letters
 def guess_letter():
 	guess = str.upper(raw_input ("\n\tGuess a letter as the wheel spins: "))
@@ -91,7 +102,7 @@ def guess_letter():
 	
 	return guess
 
-# gets vowel that user guesses
+# gets vowel that user chooses, returns as guess
 # TO DO: handle invalid inputs
 def buy_vowel():
 	guess = str.upper(raw_input ("\n\tWhich vowel would you like to buy? "))
@@ -99,11 +110,13 @@ def buy_vowel():
 		guess = str.upper(raw_input ("\n\tSorry, that's an invalid entry. Please try again: "))
 	
 	return guess
-	
+
+#stores list of all user guesses in game, returns as guesses
 def store_guesses(guess, guesses):
 	guesses.append(guess)
 	return guesses
 
+# iterates over board_solution and prints character if it's been guessed; else prints a blank
 def draw_board(guesses, board_solution):
 	print "\n\tThe board looks like: \n"
 	print "\t",
@@ -115,13 +128,20 @@ def draw_board(guesses, board_solution):
 		else:
 			print "__",
 
+# checks if user's guess was correct, returns as is_winning boolean
 def check_if_winning(guess, board_solution):
 	count_of_letter = board_solution.count(guess)
+
 	if count_of_letter > 0:
 		is_winning = True
 	else:
 		is_winning = False
 
+	return is_winning
+
+# gets score for this turn only
+# handles dollar amounts as integers
+# TO DO: handle other wedges like Bankrupt, Lose a Turn, Prize, 1/2 Car
 def get_turn_score(guess, board_solution, landed_space):	
 	count_of_letter = board_solution.count(guess)
 	
@@ -139,75 +159,84 @@ def get_turn_score(guess, board_solution, landed_space):
 
 	else:
 		turn_score = 0
-		print "\n\tThere are no %ss on the board - sorry! Next contestant." % (guess)
+		print "\n\tThere are no %ss on the board, sorry! Next contestant." % (guess)
 
 	return turn_score
 
 # gets solution that user guesses
+# TO DO: code this! 
 #def solve():
 
 
-# plays game while condition is True; adds points for each user		
+# plays game while condition is True
+# increments score for users
+# adds to list of guesses	
 def play_game():
-	user_num = get_user_num()
+	num_users = get_num_users()
 
-	users = get_user_names(user_num)
-
-	board_solution = get_board_solution()
-	# *** for testing
-	print "\n\tanswer is:", board_solution
+	users = get_user_names(num_users)
 
 	guesses = []
+
+	board_solution = get_board_solution()
+	
+	# *** for testing
+	#
+	#
+	print "\n\tanswer is:", board_solution
 
 	draw_board(guesses, board_solution)
 
 	scores = {}
-	for player in users:
-		scores[player] = 0
+	for user in users:
+		scores[user] = 0
 
-	index = 0
+	user_index = 0
 
-	for player in users:
-		user_turn = player
-		is_winning = True
+	while True:
 
-		while user_turn == player:
-			print "\n\n\tCurrent score is ", scores
-			user_score = scores[player]
-			print "\n\nIt's %s's turn." % (user_turn)
+		current_user = users[user_index]
+
+	 	user_score = scores[current_user]
+
+		print "\n\n\tCurrent score is ", scores
+		user_score = scores[current_user]
+		print "\n\n %s's turn" % (current_user)
+		
+		user_choice = get_user_choice()
+		
+		if user_choice == "1":
+			guess = guess_letter()
 			
-			user_choice = get_user_choice()
+			landed_space = spin_wheel()
 			
-			if user_choice == "1":
-				guess = guess_letter()
-				
-				landed_space = spin_wheel()
-				
-				guesses = store_guesses(guess, guesses)
+			raw_input ("\n\tPress enter to see results. ")
 
-				turn_score = get_turn_score(guess, board_solution, landed_space)
+			guesses = store_guesses(guess, guesses)
 
-				draw_board(guesses, board_solution)
+			turn_score = get_turn_score(guess, board_solution, landed_space)
 
-				is_winning = check_if_winning(guess, board_solution)
+			draw_board(guesses, board_solution)
 
-				scores[user_turn] += turn_score
+			scores[current_user] += turn_score
 
-				print is_winning
-				if is_winning == False:
-					index += 1
+			is_winning = check_if_winning(guess, board_solution)
 
-			if user_choice == "2":
-				guess = buy_vowel()
+			if is_winning == False:
+				user_index += 1
+				user_index %= num_users	
 
-				guesses = store_guesses(guess, guesses)
+		if user_choice == "2":
+			guess = buy_vowel()
 
-				user_score -= 250
+			guesses = store_guesses(guess, guesses)
 
-				draw_board(guesses, board_solution)
+			user_score -= 250
 
-			if user_choice == "3":
-				solve()
+			draw_board(guesses, board_solution)
+
+		if user_choice == "3":
+			solve()
 
 play_game()
 
