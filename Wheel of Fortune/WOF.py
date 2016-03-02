@@ -2,23 +2,20 @@ import random
 
 # TO DO: print rules, esp around points
 
-# returns True if user wants to play again, else returns False
-# TO DO: integrate this piece
-# def play_again():
-# 	print ("Do you want to play again? (yes or no) ")
-# 	return input().upper().startswith("Y")
-
-# gets users' names
-# TO DO: handle invalid input, handle both names being the same
+# gets users' names, returns in list "users"
 def get_user_names(num_users):
 	users = []
 	index = 1
 	for number in range(num_users):
+
 		user = str.upper(raw_input (("\n Player %i, please tell us your name: ") % (index)))
+
+		while users.count(user) > 0:
+			user = str.upper(raw_input (" Sorry, name taken. Please try again: "))
 		
 		while user in [" ", "", ".", ",", "'"]:
-			user = str.upper(raw_input (" Sorry, invalid user name. Please try again: "))
-		
+			user = str.upper(raw_input (" Sorry, invalid user name. Please try again: "))			
+
 		users.append(user)
 		index += 1
 	
@@ -26,7 +23,6 @@ def get_user_names(num_users):
 
 # gets number of users playing the game, returns as num_users
 # keeps asking until valid input received (only 1-3 allowed)
-
 def get_num_users():
 
 	num_users = raw_input ("\n How many contestants will be playing today? ")
@@ -45,8 +41,7 @@ def get_category():
 	return category
 
 # chooses random board solution from category file, splits into list of characters, returns as board_solution
-def get_board_solution():
-	category = get_category()
+def get_board_solution(category):
 	category_files = {"AROUND THE HOUSE": "sol_around_the_house.txt", 
 		"BEFORE AND AFTER": "sol_before_and_after.txt", 
 		"EVENTS": "sol_event.txt", 
@@ -63,12 +58,12 @@ def get_board_solution():
 
 # gets user's action for this turn, returns as user_choice
 def get_user_choice(user_score):
-	user_choice = raw_input ("\n\t1 = Spin the wheel and guess a letter \n\t2 = Buy a vowel for $250 \n\t3 = Solve the puzzle \n\n\tChoose an action: ")
+	user_choice = raw_input ("\n\t1 = Spin the wheel and guess a letter \n\t2 = Buy a vowel for $250 \n\t3 = Solve the puzzle \n\t4 = Give up and exit \n\n\tChoose an action: ")
 
 	while user_choice == "2" and user_score < 250:
 		user_choice = raw_input("\n\tSorry, you need at least $250 to buy a vowel. Try again: ")
 
-	while user_choice not in ["1", "2", "3"]:
+	while user_choice not in ["1", "2", "3", "4"]:
 		user_choice = raw_input("\n\tSorry, that's not an option. Try again: ")	
 
 	return user_choice
@@ -129,6 +124,8 @@ def solve_puzzle(board_solution):
 		return False
 
 #stores list of all user guesses in game, returns as guesses
+# TO DO: handle when you guess the last letter
+# TO DO: handle letters already guessed (no points)
 def store_guesses(guess, guesses):
 	guesses.append(guess)
 	return guesses
@@ -136,7 +133,7 @@ def store_guesses(guess, guesses):
 # iterates over board_solution and prints character if it's been guessed; else prints a blank
 # TO DO: Fix bug that prints extra line
 def draw_board(guesses, board_solution, category):
-	print "\n\tThe category is: %s\n\n" % (category) 
+	print "\n\tCategory: %s\n\n" % (category) 
 	print "\t",
 	for letter in board_solution:
 		if letter in [" ", "'", "-", "?"]:
@@ -180,10 +177,10 @@ def check_letter(guess, board_solution, turn_score):
 		is_winning = True
 
 		if count_of_letter == 1:
-			print "\n\t>>> There is %i %s on the board! You've earned %i this round." % (count_of_letter, guess, turn_score)
+			print "\n\t>>> There is %i %s on the board! You've earned $%i this round." % (count_of_letter, guess, turn_score)
 			
 		else:
-			print "\n\t>>> There are %i %ss on the board! You've earned %i in this round." % (count_of_letter, guess, turn_score)
+			print "\n\t>>> There are %i %ss on the board! You've earned $%i in this round." % (count_of_letter, guess, turn_score)
 		
 	else:
 		print "\n\t>>> There are no %ss on the board, sorry! Next contestant." % (guess)
@@ -191,17 +188,33 @@ def check_letter(guess, board_solution, turn_score):
 
 	return is_winning
 
-# prints entire board
-# TO DO: add option to "give up" and use this
+# prints all characters in board, with category
 def reveal_board(category, board_solution):
 	print "\n\tCategory: %s\n\n" % (category) 
 	print "\t",
+	
 	for letter in board_solution:
 		print letter,
 
-# plays game while condition is True
-# increments score for users
-# adds to list of guesses	
+# prints final score and thanks user for playing
+def end_game(scores):
+
+	print "\n\n\tFinal score is ", scores
+
+	print "\n\t>>> Thanks for playing."
+
+# returns True if user wants to play again
+def prompt_again():
+	
+	again = str.upper(raw_input ("\n\tWant to play again? "))
+	
+	if again.startswith("Y"):
+		return True
+
+	else:
+		return False
+
+# main game function
 def play_game():
 	
 	print " \n\n Welcome to WHEEL OF FORTUNE"
@@ -216,7 +229,7 @@ def play_game():
 
 	category = get_category()
 
-	board_solution = get_board_solution()
+	board_solution = get_board_solution(category)
 
 	guesses = []
 
@@ -293,8 +306,10 @@ def play_game():
 				print "\n\t>>> Nice work! You solved ths puzzle."
 
 				reveal_board(category, board_solution)
-				# TO DO: add bonus amount
-				# TO DO: start next round
+
+				end_game(scores)
+
+				break
 			
 			else:
 				print "\n\t>>> Sorry, that's not right"
@@ -302,8 +317,29 @@ def play_game():
 				user_index += 1
 				user_index %= num_users	
 
+		if user_choice == "4":
 
-play_game()
+			raw_input ("\n\t>> Press enter to reveal the board. ")
+
+			reveal_board(category, board_solution)
+
+			end_game(scores)
+
+			break
+###						
+###
+###	ACTUAL GAME BELOW
+###
+###						
+
+active_game = True
+
+while active_game:
+
+	play_game()
+
+	active_game = prompt_again()
+
 
 
 
