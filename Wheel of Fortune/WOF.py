@@ -149,7 +149,7 @@ def draw_board(guesses, board_solution, category):
 # gets score for this turn only
 # prints message based on whether user earned points
 # handles dollar amounts as integers
-# TO DO: handle other wedges like Bankrupt, Lose a Turn, Prize, 1/2 Car
+# TO DO: handle when wheel lands on Bankrupt
 def calc_score_wheel(guess, board_solution, landed_space):	
 	count_of_letter = board_solution.count(guess)
 	
@@ -167,7 +167,7 @@ def calc_score_wheel(guess, board_solution, landed_space):
 def landed_on_bankrupt(user_score):
 	user_score = 0
 
-	print "\n\tSo sorry, you've landed on BANKRUPT! Your score is %i, and it's the next contestant's turn." % (user_score)
+	print "\n\t>> So sorry, you've landed on BANKRUPT! Your score is %i, and it's the next contestant's turn." % (user_score)
 
 	return user_score
 
@@ -191,6 +191,8 @@ def check_letter(guess, board_solution, turn_score):
 
 	return is_winning
 
+# prints entire board
+# TO DO: add option to "give up" and use this
 def reveal_board(category, board_solution):
 	print "\n\tCategory: %s\n\n" % (category) 
 	print "\t",
@@ -215,9 +217,6 @@ def play_game():
 	category = get_category()
 
 	board_solution = get_board_solution()
-
-## for testing
-	print board_solution
 
 	guesses = []
 
@@ -247,6 +246,7 @@ def play_game():
 				
 				landed_space = landed_on_million()
 				## pass through variabe for bankrupt situation?
+				## user only wins if they also solve the puzzle
 
 			#if landed_space == "BANKRUPT":
 				## TO DO: code this
