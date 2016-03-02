@@ -10,12 +10,9 @@ def get_user_names(num_users):
 
 		user = str.upper(raw_input (("\n Player %i, please tell us your name: ") % (index)))
 
-		while users.count(user) > 0:
-			user = str.upper(raw_input (" Sorry, name taken. Please try again: "))
-		
-		while user in [" ", "", ".", ",", "'"]:
-			user = str.upper(raw_input (" Sorry, invalid user name. Please try again: "))			
-
+		while users.count(user) > 0 or user in [" ", "", ".", ",", "'"]:
+			user = str.upper(raw_input (" Sorry, invalid name. Please try again: "))
+	
 		users.append(user)
 		index += 1
 	
@@ -57,6 +54,7 @@ def get_board_solution(category):
 	return board_solution
 
 # gets user's action for this turn, returns as user_choice
+# TO DO: fix bug, combine two while conditions somehow
 def get_user_choice(user_score):
 	user_choice = raw_input ("\n\t1 = Spin the wheel and guess a letter \n\t2 = Buy a vowel for $250 \n\t3 = Solve the puzzle \n\t4 = Give up and exit \n\n\tChoose an action: ")
 
@@ -92,12 +90,18 @@ def landed_on_million():
 	return landed_space
 			
 # gets consonant that user chooses, returns as guess
-# TO DO: handle other non-letters, previously guessed letters
-def guess_letter():
-	guess = str.upper(raw_input ("\n\tGuess a letter as the wheel spins: "))
-	
-	while len(guess) > 1:
-		guess = str.upper(raw_input ("\n\tSorry, just one letter please: "))
+# TO DO: handle other non-letters
+def guess_letter(guesses):
+	guess = str.upper(raw_input ("\n\tGuess a letter as the wheel spins: "))	
+
+	while guesses.count(guess) > 0 or len(guess) > 1 or guess in ['A', 'E', 'I', 'O', 'U', '.', ',', "", " ", "!"]:
+		guess = str.upper(raw_input ("\n\tInvalid guess, please try again: "))		
+
+	# while len(guess) > 1:
+	# 	guess = str.upper(raw_input ("\n\tSorry, just one letter please: "))
+
+	# while guess in ['A', 'E', 'I', 'O', 'U']:
+	# 	guess = str.upper(raw_input ("\n\tNo vowels, please choose a consonant: "))
 	
 	return guess
 
@@ -160,14 +164,6 @@ def calc_score_wheel(guess, board_solution, landed_space):
 
 	return turn_score
 
-# if user lands on bankrupt, drain user score to 0, return new user_score?? does this make sense as a function?
-def landed_on_bankrupt(user_score):
-	user_score = 0
-
-	print "\n\t>> So sorry, you've landed on BANKRUPT! Your score is %i, and it's the next contestant's turn." % (user_score)
-
-	return user_score
-
 # prints message based on whether letter is in board, returns is_winning = True if letter was correct
 # TO DO: message is awkward for vowels ("-250 earned")
 def check_letter(guess, board_solution, turn_score):
@@ -217,7 +213,7 @@ def prompt_again():
 # main game function
 def play_game():
 	
-	print " \n\n Welcome to WHEEL OF FORTUNE"
+	print " \n\n Welcome to W H E E L  O F  F O R T U N E"
 
 	num_users = get_num_users()
 
@@ -251,7 +247,7 @@ def play_game():
 		user_choice = get_user_choice(user_score)
 		
 		if user_choice == "1":
-			guess = guess_letter()
+			guess = guess_letter(guesses)
 			
 			landed_space = spin_wheel()
 
@@ -261,26 +257,33 @@ def play_game():
 				## pass through variabe for bankrupt situation?
 				## user only wins if they also solve the puzzle
 
-			#if landed_space == "BANKRUPT":
-				## TO DO: code this
+			if landed_space == "BANKRUPT":
+				user_score = 0
 
-			print "\n\t>> Wheel has landed on: %s" % (landed_space)
-			
-			raw_input ("\n\tPress 'enter' to see results ")
+				print "\n\t>> So sorry, you've landed on BANKRUPT! Your score is %i, and it's the next contestant's turn." % (user_score)
 
-			guesses = store_guesses(guess, guesses)
-
-			turn_score = calc_score_wheel(guess, board_solution, landed_space)
-
-			is_winning = check_letter(guess, board_solution, turn_score)	
-
-			draw_board(guesses, board_solution, category)
-
-			scores[current_user] += turn_score
-
-			if is_winning == False:
 				user_index += 1
 				user_index %= num_users	
+			
+			else:
+
+				print "\n\t>> Wheel has landed on: %s" % (landed_space)
+			
+				raw_input ("\n\tPress 'enter' to see results ")
+
+				guesses = store_guesses(guess, guesses)
+
+				turn_score = calc_score_wheel(guess, board_solution, landed_space)
+
+				is_winning = check_letter(guess, board_solution, turn_score)	
+
+				draw_board(guesses, board_solution, category)
+
+				scores[current_user] += turn_score
+
+				if is_winning == False:
+					user_index += 1
+					user_index %= num_users	
 
 		if user_choice == "2":
 			guess = buy_vowel()
