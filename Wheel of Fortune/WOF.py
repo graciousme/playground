@@ -1,6 +1,10 @@
 import random
 
-# TO DO: print rules, esp around points, print turn score
+# TO DO
+# print rules
+# incorporate regex for non-letter guesses
+# sounds
+# add more solutions
 
 
 # gets users' names, returns in list
@@ -116,7 +120,6 @@ def store_guesses(guess, guesses):
 	return guesses
 
 # iterates over board_solution and prints character if it's been guessed; else prints a blank
-# returns True if 0 letters left to solve
 def draw_board(guesses, board_solution, category):
 	print "\n\tCategory: %s\n\n" % (category) 
 	print "\t",
@@ -134,8 +137,7 @@ def draw_board(guesses, board_solution, category):
 		else:
 			print "__",
 
-	if any_letters_left > 0:
-		print "any_letters_left =", any_letters_left
+	if any_letters_left > 0: # returns False when there are no letters left to solve
 		return True
 
 # gets score for this turn only
@@ -176,8 +178,7 @@ def reveal_board(category, board_solution):
 	for letter in board_solution:
 		print letter,
 
-# prints final score and thanks user for playing
-# TO DO: print winner
+# prints winner and final score
 def end_game(scores):
 
 	winner = "no one"
