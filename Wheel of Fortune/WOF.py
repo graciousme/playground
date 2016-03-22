@@ -1,9 +1,9 @@
 import random
 
-# TO DO: print rules, esp around points
+# TO DO: print rules, esp around points, print turn score
+
 
 # gets users' names, returns in list
-# USERS
 def get_user_names(num_users):
 	users = []
 	index = 1
@@ -20,13 +20,11 @@ def get_user_names(num_users):
 	return users
 
 # gets number of users playing the game, returns as num_users
-# keeps asking until valid input received (only 1-3 allowed)
-# NUM_USERS
 def get_num_users():
 
 	num_users = raw_input ("\n How many contestants will be playing today? ")
 
-	while num_users not in ["1", "2", "3"]:
+	while num_users not in ["1", "2", "3"]: #only allows up to 3 players
 		num_users = raw_input("\n Sorry, invalid number. Please try again: ")
 
 	num_users = int(num_users)
@@ -34,14 +32,12 @@ def get_num_users():
 	return num_users
 
 # chooses random category from list and prints
-# CATEGORY
 def get_category(): 
 	categories = ["AROUND THE HOUSE", "BEFORE AND AFTER", "EVENTS", "FUN & GAMES", "PHRASES", "WHAT ARE YOU DOING?"]
 	category = random.choice(categories)
 	return category
 
-# chooses random board solution from category file, splits into list of characters, returns as board_solution
-# BOARD SOLUTION
+# chooses random board solution from category file, splits into list of characters
 def get_board_solution(category):
 	category_files = {"AROUND THE HOUSE": "sol_around_the_house.txt", 
 		"BEFORE AND AFTER": "sol_before_and_after.txt", 
@@ -58,8 +54,6 @@ def get_board_solution(category):
 	return board_solution
 
 # gets user's action for this turn, returns as user_choice
-# TO DO: fix bug, combine two while conditions somehow
-# USER_CHOICE
 def get_user_choice(user_score):
 	user_choice = raw_input ("\n\t1 = Spin the wheel and guess a letter \n\t2 = Buy a vowel for $250 \n\t3 = Solve the puzzle \n\t4 = Give up and exit \n\n\tChoose an action: ")
 
@@ -72,8 +66,6 @@ def get_user_choice(user_score):
 	return user_choice
 
 # gets the space that user lands on, returns as landed_space
-# TO DO: code for non-$ wedges
-# LANDED_SPACE
 def spin_wheel():
 	with open("wheel_spaces.txt") as file:
 		lines = file.read().splitlines()
@@ -81,15 +73,15 @@ def spin_wheel():
 
 	return landed_space
 
-# if lands on $1MM, give them 1 in 3 chance of getting it; otherwise Bankrupt
-# TO DO: make sure bankrupt works
+# returns True if user lands on Bankrupt
 def check_if_bankrupt(landed_space):
-	rand_int = random.randint(0, 2)
-	return landed_space == "BANKRUPT" or (landed_space == "ONE_MILLION" and rand_int > 0)
+	return landed_space == "BANKRUPT"
+
+# returns True if user lands on Lose a Turn
+def check_if_lose_a_turn(landed_space):
+	return landed_space == "LOSE A TURN"
 			
 # gets consonant that user chooses, returns as guess
-# TO DO: handle other non-letters
-# GUESS
 def guess_letter(guesses):
 	guess = str.upper(raw_input ("\n\tGuess a letter as the wheel spins: "))	
 
@@ -99,8 +91,6 @@ def guess_letter(guesses):
 	return guess
 
 # gets vowel that user chooses, returns as guess
-# TO DO: handle invalid inputs, users with < $250
-# GUESS
 def buy_vowel():
 	guess = str.upper(raw_input ("\n\tWhich vowel would you like to buy? "))
 	
@@ -120,34 +110,38 @@ def solve_puzzle(board_solution):
 	else:
 		return False
 
-#stores list of all user guesses in game, returns as guesses
-# TO DO: handle when you guess the last letter
-# TO DO: handle letters already guessed (no points)
-# GUESSES
+# stores list of all user guesses in game, returns as guesses
 def store_guesses(guess, guesses):
 	guesses.append(guess)
 	return guesses
 
 # iterates over board_solution and prints character if it's been guessed; else prints a blank
+# returns True if 0 letters left to solve
 def draw_board(guesses, board_solution, category):
 	print "\n\tCategory: %s\n\n" % (category) 
 	print "\t",
+	any_letters_left = len(board_solution)	
+
 	for letter in board_solution:
 		if letter in [" ", "'", "-", "?"]:
+			any_letters_left -= 1
 			print letter,
+
 		elif letter in guesses:
+			any_letters_left -= 1
 			print letter,
+
 		else:
 			print "__",
 
-# gets score for this turn only
-# handles dollar amounts as integers
-# TURN_SCORE
-def calc_score_wheel(guess, board_solution, landed_space):	
-	count_of_letter = board_solution.count(guess)
-	
-	if count_of_letter > 0:
+	if any_letters_left > 0:
+		print "any_letters_left =", any_letters_left
+		return True
 
+# gets score for this turn only
+def calculate_turn_score(guess, board_solution, landed_space):	
+	count_of_letter = board_solution.count(guess)
+	if count_of_letter > 0:
 		landed_space = int(landed_space.replace("$", ""))
 		turn_score = landed_space * count_of_letter
 		
@@ -156,9 +150,7 @@ def calc_score_wheel(guess, board_solution, landed_space):
 
 	return turn_score
 
-# prints message based on whether letter is in board, returns is_winning = True if letter was correct
-# TO DO: message is awkward for vowels ("-250 earned")
-# IS_WINNING
+# Prints number of letters found on the board, along with turn score. Returns is_losing if 0 letters found on board.
 def check_letter(guess, board_solution, turn_score):
 	count_of_letter = board_solution.count(guess)
 	is_losing = True
@@ -185,11 +177,17 @@ def reveal_board(category, board_solution):
 		print letter,
 
 # prints final score and thanks user for playing
+# TO DO: print winner
 def end_game(scores):
 
-	print "\n\n\tFinal score is ", scores
+	winner = "no one"
+	winner_score = 0
+	for key, value in dict.items(scores):
+		if int(value) > winner_score:
+			winner = key
 
-	print "\n\t>>> Thanks for playing."
+	print "\n\n\tFinal score is ", scores
+	print "\n\t>>> The winner is %s! Thanks for playing." % (winner)
 
 # returns True if user wants to play again
 def prompt_again():
@@ -246,8 +244,8 @@ def play_game():
 			landed_space = spin_wheel()
 
 			is_bankrupt = check_if_bankrupt(landed_space)
-				## pass through variabe for bankrupt situation?
-				## user only wins if they also solve the puzzle
+
+			is_lose_a_turn = check_if_lose_a_turn(landed_space)
 
 			if is_bankrupt:
 				scores[current_user] = 0
@@ -255,15 +253,27 @@ def play_game():
 				guesses.pop() # don't store guesses for bankrupt turns
 
 				print "\n\t>> So sorry, you've landed on BANKRUPT! Your score is %i, and it's the next contestant's turn." % (scores[current_user])			
+			
+			elif is_lose_a_turn:
+				turn_score = 0
+				guesses.pop() # don't store guesses when user loses their turn
+
+				print "\n\t>> Oh no! You've landed on LOSE A TURN! Your score is %i for this round, and it's the next contestant's turn." % (turn_score)
+
 			else:
 
 				print "\n\t>> Wheel has landed on: %s" % (landed_space)
 			
 				raw_input ("\n\tPress 'enter' to see results ")
 
-				turn_score = calc_score_wheel(guess, board_solution, landed_space)
-				draw_board(guesses, board_solution, category)
+				turn_score = calculate_turn_score(guess, board_solution, landed_space)
+				current_user_turn_over = check_letter(guess, board_solution, turn_score)
 				scores[current_user] += turn_score
+				
+				any_letters_left = draw_board(guesses, board_solution, category)
+				if not any_letters_left:
+					end_game(scores)
+					break
 
 			if turn_score <= 0:
 				current_user_turn_over = True
@@ -274,8 +284,12 @@ def play_game():
 
 			turn_score = -250
 			current_user_turn_over = check_letter(guess, board_solution, turn_score)
-			draw_board(guesses, board_solution, category)
 			scores[current_user] += turn_score
+
+			any_letters_left = draw_board(guesses, board_solution, category)
+			if not any_letters_left:
+				end_game(scores)
+				break
 
 		if user_choice == "3":
 			is_solved = solve_puzzle(board_solution)
